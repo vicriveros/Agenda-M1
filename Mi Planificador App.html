@@ -1,0 +1,3170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mi Planificador de Materias &amp; Tareas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* =============================================
+       VARIABLES CSS — DARK MODE (default)
+    ============================================= */
+    :root {
+      --bg: #0f0f0f;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #222222;
+      --border: #2e2e2e;
+      --border-hover: #3d3d3d;
+      --text: #e8e8e8;
+      --text-muted: #888888;
+      --text-subtle: #555555;
+      --accent: #e8e8e8;
+      --accent-bg: #1f1f1f;
+      --success: #4ade80;
+      --success-bg: rgba(74, 222, 128, 0.1);
+      --danger: #f87171;
+      --danger-bg: rgba(248, 113, 113, 0.1);
+      --warning: #fbbf24;
+      --warning-bg: rgba(251, 191, 36, 0.1);
+      --primary: #a3a3a3;
+      --primary-hover: #d4d4d4;
+      --radius: 8px;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* =============================================
+       VARIABLES CSS — LIGHT MODE
+    ============================================= */
+    html.light-mode {
+      --bg: #ffffff;
+      --bg-secondary: #f9f9f9;
+      --bg-tertiary: #f0f0f0;
+      --border: #e5e5e5;
+      --border-hover: #d4d4d4;
+      --text: #1a1a1a;
+      --text-muted: #6b6b6b;
+      --text-subtle: #b0b0b0;
+      --accent: #1a1a1a;
+      --accent-bg: #f0f0f0;
+      --success: #16a34a;
+      --success-bg: rgba(22, 163, 74, 0.08);
+      --danger: #dc2626;
+      --danger-bg: rgba(220, 38, 38, 0.08);
+      --warning: #d97706;
+      --warning-bg: rgba(217, 119, 6, 0.08);
+      --primary: #1a1a1a;
+      --primary-hover: #333333;
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* =============================================
+       SCROLLBAR
+    ============================================= */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-subtle); }
+
+    /* =============================================
+       HEADER
+    ============================================= */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      padding: 0 1.5rem;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .brand-icon {
+      background: var(--bg-tertiary);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .brand p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge-save {
+      background: var(--success-bg);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      color: var(--success);
+      font-size: 0.72rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 500;
+    }
+
+    html.light-mode .badge-save {
+      border-color: rgba(22, 163, 74, 0.2);
+    }
+
+    /* =============================================
+       BUTTONS
+    ============================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      touch-action: manipulation;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .btn-light {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: var(--border);
+    }
+    .btn-light:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .theme-toggle svg {
+      transition: transform 0.3s ease;
+    }
+    .theme-toggle:hover svg {
+      transform: rotate(20deg);
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    html.light-mode .btn-primary {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-outline:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+    html.light-mode .btn-danger {
+      border-color: rgba(220, 38, 38, 0.2);
+    }
+
+    .btn-sm { padding: 0.35rem 0.6rem; font-size: 0.78rem; }
+
+    /* =============================================
+       NAVEGACIÓN PRINCIPAL
+    ============================================= */
+    nav.main-nav {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 56px;
+      z-index: 40;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0;
+      padding: 0 1rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-container::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .nav-tab:hover { color: var(--text); }
+    .nav-tab.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+
+    /* =============================================
+       CONTENEDOR PRINCIPAL
+    ============================================= */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 1.25rem auto;
+      padding: 0 1rem;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =============================================
+       SEPARADOR DE MATERIAS
+    ============================================= */
+    .course-bar {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.65rem 1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .course-tabs-list {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      flex: 1;
+      align-items: center;
+      scrollbar-width: none;
+    }
+    .course-tabs-list::-webkit-scrollbar { display: none; }
+
+    .course-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .course-pill:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .course-pill.active {
+      background: var(--bg-tertiary);
+      color: var(--text);
+      border-color: var(--border-hover);
+      font-weight: 600;
+    }
+
+    .course-color-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* =============================================
+       RESUMEN DE LA MATERIA
+    ============================================= */
+    .course-banner {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .metric-card {
+      border-left: 3px solid var(--border-hover);
+      padding-left: 0.85rem;
+    }
+    .metric-card.success { border-left-color: var(--success); }
+    .metric-card.danger { border-left-color: var(--danger); }
+    .metric-card.warning { border-left-color: var(--warning); }
+
+    .metric-title {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-top: 0.1rem;
+      color: var(--text);
+    }
+    .metric-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .grade-blue { color: var(--text); }
+    .grade-red { color: var(--danger); }
+
+    /* =============================================
+       EXCEL CONTAINER
+    ============================================= */
+    .excel-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .excel-topbar {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .excel-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .excel-sync-tag {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.22rem 0.55rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table.excel-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    table.excel-table th {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--border);
+      text-align: left;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    table.excel-table td {
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.75rem;
+      vertical-align: middle;
+      background: var(--bg-secondary);
+      color: var(--text);
+      transition: background-color 0.15s ease;
+    }
+
+    table.excel-table tr:hover td {
+      background: var(--bg-tertiary);
+    }
+
+    table.excel-table tfoot tr td {
+      background: var(--bg-tertiary) !important;
+      font-weight: 700;
+    }
+
+    .cell-input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 0.35rem 0.45rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      background: transparent;
+      transition: all 0.15s ease;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .cell-input:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-tertiary);
+    }
+    .cell-input:focus {
+      outline: none;
+      border-color: var(--border-hover);
+      background: var(--bg-tertiary);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
+    }
+
+    html.light-mode .cell-input:focus {
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+    }
+
+    .cell-number {
+      text-align: center;
+      font-weight: 700;
+      width: 90px;
+    }
+
+    .cell-center { text-align: center; }
+
+    /* =============================================
+       CHECKBOX
+    ============================================= */
+    .custom-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--text-muted);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .row-excluded td {
+      background: var(--bg) !important;
+      color: var(--text-subtle) !important;
+    }
+    .row-excluded .cell-input {
+      color: var(--text-subtle) !important;
+      text-decoration: line-through;
+    }
+
+    /* =============================================
+       EMPTY STATE
+    ============================================= */
+    .empty-state-card {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      border: 1px dashed var(--border);
+      margin: 1.5rem 0;
+    }
+    .empty-state-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .empty-state-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .empty-state-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto 1.5rem auto;
+      line-height: 1.6;
+    }
+
+    /* =============================================
+       TASKS GRID
+    ============================================= */
+    .tasks-grid-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 950px) {
+      .tasks-grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =============================================
+       TASK CARDS
+    ============================================= */
+    .task-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      transition: all 0.15s ease;
+    }
+    .task-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: 0 0 0 1px var(--border-hover);
+    }
+    .task-card.completed {
+      opacity: 0.5;
+    }
+    .task-card.completed .task-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .task-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* =============================================
+       COUNTDOWN BADGES
+    ============================================= */
+    .countdown-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .countdown-safe {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+    }
+    .countdown-warning {
+      background: var(--warning-bg);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    .countdown-urgent {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+    .countdown-expired {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    html.light-mode .countdown-safe { border-color: rgba(22, 163, 74, 0.2); }
+    html.light-mode .countdown-warning { border-color: rgba(217, 119, 6, 0.2); }
+    html.light-mode .countdown-urgent { border-color: rgba(220, 38, 38, 0.2); }
+
+    /* =============================================
+       CALENDARIO
+    ============================================= */
+    .calendar-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .calendar-month-title {
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      color: var(--text);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: left;
+    }
+
+    .calendar-day-header {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding: 0.5rem 0.25rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .calendar-cell {
+      min-height: 110px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 9px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      font-size: 0.8rem;
+      background: var(--bg-secondary);
+      position: relative;
+      transition: all 0.15s ease;
+      cursor: default;
+    }
+
+    .calendar-cell:hover:not(.other-month) {
+      border-color: var(--border-hover);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .calendar-cell.other-month {
+      background: var(--bg);
+      color: var(--text-subtle);
+      border-color: var(--border);
+      opacity: 0.45;
+    }
+
+    .calendar-cell.today {
+      border: 2px solid var(--text);
+      background: var(--bg-tertiary);
+    }
+
+    .cal-cell-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .cal-day-number {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .calendar-cell.today .cal-day-number {
+      background: var(--text);
+      color: var(--bg);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.82rem;
+    }
+
+    .cal-add-btn {
+      opacity: 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 1px 5px;
+      line-height: 1;
+      transition: all 0.15s ease;
+    }
+
+    .calendar-cell:hover .cal-add-btn {
+      opacity: 1;
+    }
+
+    .cal-add-btn:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .cal-tasks-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+      max-height: 180px;
+    }
+
+    .cal-task-card {
+      font-size: 0.73rem;
+      padding: 4px 6px;
+      border-radius: 5px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--text-muted);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      line-height: 1.25;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .cal-task-card:hover {
+      background: var(--bg-secondary);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .cal-task-card.completed {
+      opacity: 0.55;
+    }
+
+    .cal-task-card.completed .cal-task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .cal-task-title {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+
+    .cal-task-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .cal-task-course-tag {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90px;
+    }
+
+    .cal-task-time {
+      font-size: 0.64rem;
+      color: var(--text-subtle);
+      white-space: nowrap;
+    }
+
+    /* =============================================
+       MODAL
+    ============================================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      padding: 1.5rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .modal-card h3 {
+      color: var(--text);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      background: var(--bg-tertiary);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: border-color 0.15s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--border-hover);
+    }
+
+    /* =============================================
+       TOAST
+    ============================================= */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--bg-tertiary);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 200;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* =============================================
+       COUNTDOWN SIDEBAR PANEL
+    ============================================= */
+    .countdown-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .countdown-panel h3 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text);
+    }
+
+    /* =============================================
+       SECCIÓN DE APUNTES & SUBSECCIONES
+    ============================================= */
+    .notes-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .notes-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1.25rem;
+    }
+
+    .subsection-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: border-color 0.15s ease;
+    }
+
+    .subsection-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .subsection-header {
+      padding: 0.85rem 1.15rem;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .subsection-title-area {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .subsection-title-input {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 0.2rem 0.4rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .subsection-title-input:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-secondary);
+    }
+
+    .subsection-title-input:focus {
+      outline: none;
+      border-color: var(--border-hover);
+      background: var(--bg-secondary);
+    }
+
+    .subsection-stats {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .notes-list {
+      padding: 0.75rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .note-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: var(--bg-secondary);
+      transition: all 0.15s ease;
+    }
+
+    .note-item:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border);
+    }
+
+    .note-item.completed {
+      opacity: 0.6;
+    }
+
+    .note-item.completed .note-input {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .note-input {
+      flex: 1;
+      font-size: 0.875rem;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 0.3rem 0.5rem;
+      font-family: inherit;
+    }
+
+    .note-input:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-secondary);
+    }
+
+    .note-input:focus {
+      outline: none;
+      border-color: var(--border-hover);
+      background: var(--bg-secondary);
+    }
+
+    .note-date-badge {
+      font-size: 0.72rem;
+      color: var(--text-subtle);
+      white-space: nowrap;
+    }
+
+    /* Botones de Reordenar */
+    .reorder-btn-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 3px 5px;
+      font-size: 0.75rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s ease;
+    }
+
+    .btn-icon:hover:not(:disabled) {
+      background: var(--bg-tertiary);
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .btn-icon:disabled {
+      opacity: 0.2;
+      cursor: not-allowed;
+    }
+
+    /* =============================================
+       SECCIÓN DE HORARIO SEMANAL
+    ============================================= */
+    .schedule-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .schedule-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .schedule-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table.schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      min-width: 760px;
+    }
+
+    table.schedule-table th {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 0.5rem;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    table.schedule-table th.time-col {
+      width: 140px;
+    }
+
+    table.schedule-table td {
+      border: 1px solid var(--border);
+      padding: 6px;
+      vertical-align: top;
+      background: var(--bg-secondary);
+      height: 90px;
+      transition: background-color 0.15s ease;
+    }
+
+    table.schedule-table td.time-cell {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-align: center;
+      vertical-align: middle;
+      padding: 0.5rem;
+    }
+
+    table.schedule-table td.break-cell {
+      background: var(--bg);
+      color: var(--text-subtle);
+      font-size: 0.72rem;
+      text-align: center;
+      height: 32px;
+      padding: 4px;
+      vertical-align: middle;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .schedule-slot {
+      height: 100%;
+      min-height: 75px;
+      border-radius: 6px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      border: 1px dashed transparent;
+      transition: all 0.15s ease;
+    }
+
+    .schedule-slot.empty:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-tertiary);
+    }
+
+    .schedule-slot.assigned {
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+      background: var(--bg-tertiary);
+    }
+
+    .schedule-slot.assigned:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .slot-course-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .slot-room {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .slot-empty-text {
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      text-align: center;
+      margin: auto;
+      opacity: 0.4;
+    }
+
+    .schedule-slot:hover .slot-empty-text {
+      opacity: 1;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>Mi Planificador</h1>
+          <p>Organizador limpio &bull; Escala 1.0 – 7.0</p>
+        </div>
+      </div>
+      <div class="header-tools">
+        <span class="badge-save" id="save-status-badge">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--success); display: inline-block;"></span>
+          Auto-guardado activo
+        </span>
+        <button class="btn btn-light btn-sm theme-toggle" onclick="app.toggleTheme()" id="theme-toggle-btn" title="Cambiar tema">
+          <svg id="theme-icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg id="theme-icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="btn btn-light btn-sm" onclick="app.exportBackup()" title="Descargar copia de respaldo para tu teléfono u otro PC">
+          📥 Respaldo
+        </button>
+        <button class="btn btn-light btn-sm" onclick="document.getElementById('import-file-input').click()" title="Cargar copia de respaldo">
+          📤 Cargar
+        </button>
+        <input type="file" id="import-file-input" accept=".json" style="display: none;" onchange="app.importBackup(event)">
+        <button class="btn btn-light btn-sm" onclick="app.openNewTaskModal()">
+          + Nueva Tarea
+        </button>
+        <button class="btn btn-light btn-sm" onclick="app.openNewCourseModal()">
+          + Añadir Materia
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVEGACIÓN PRINCIPAL -->
+  <nav class="main-nav">
+    <div class="nav-container">
+      <button class="nav-tab active" onclick="app.switchTab('tab-schedule', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        Horario
+      </button>
+      <button class="nav-tab" onclick="app.switchTab('tab-calendar', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        Calendario Multimes
+      </button>
+      <button class="nav-tab" onclick="app.switchTab('tab-tasks', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        Tareas por Hacer &amp; Temporizador
+      </button>
+      <button class="nav-tab" onclick="app.switchTab('tab-courses', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        Materias, Notas &amp; Controles
+      </button>
+      <button class="nav-tab" onclick="app.switchTab('tab-notes', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Apuntes
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <main>
+
+    <!-- PESTAÑA: HORARIO SEMANAL -->
+    <section id="tab-schedule" class="tab-content active">
+      <div class="schedule-container">
+        <div class="schedule-header-bar">
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Horario Semanal de Clases</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Bloques de 1h 10m con 20m de break. Haz clic en cualquier casilla para asignar o cambiar la materia y sala.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn btn-outline btn-sm" onclick="app.clearSchedule()">
+              Limpiar Horario
+            </button>
+          </div>
+        </div>
+
+        <div class="schedule-table-wrap">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th class="time-col">Bloque / Hora</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA: MATERIAS, NOTAS Y CONTROLES -->
+    <section id="tab-courses" class="tab-content">
+      
+      <!-- CONTENEDOR DE ESTADO VACÍO (SI NO HAY MATERIAS) -->
+      <div id="no-courses-view" style="display: none;">
+        <div class="empty-state-card">
+          <div class="empty-state-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          </div>
+          <h2 class="empty-state-title">Tu planificador está listo y vacío</h2>
+          <p class="empty-state-desc">
+            No hay materias precargadas. Puedes comenzar agregando las materias que estás cursando ahora para configurar sus notas, evaluaciones y controles.
+          </p>
+          <button class="btn btn-primary" onclick="app.openNewCourseModal()">
+            + Añadir Mi Primera Materia
+          </button>
+        </div>
+      </div>
+
+      <!-- VISTA NORMAL (CUANDO HAY AL MENOS UNA MATERIA) -->
+      <div id="courses-active-view">
+        <!-- SEPARADOR DE MATERIAS -->
+        <div class="course-bar">
+          <div style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;">Materias:</div>
+          <div class="course-tabs-list" id="course-tabs-container"></div>
+          <div style="display: flex; gap: 0.4rem; align-items: center;">
+            <button class="btn btn-outline btn-sm" onclick="app.openNewCourseModal()">+ Añadir Materia</button>
+            <button class="btn btn-outline btn-sm" style="color: var(--danger);" onclick="app.deleteCurrentCourse()" title="Eliminar materia actual">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- BANNER DE RESUMEN DE LA MATERIA -->
+        <div class="course-banner" id="course-summary-banner"></div>
+
+        <!-- VISUALIZADOR TIPO EXCEL: NOTAS GENERALES -->
+        <div class="excel-container">
+          <div class="excel-topbar">
+            <div class="excel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              <span>Planilla Excel &mdash; Calificaciones &amp; Ponderaciones</span>
+            </div>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <span class="excel-sync-tag" title="El promedio de controles se enlaza automáticamente a esta planilla">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                Auto-sincronizado con Controles
+              </span>
+              <button class="btn btn-outline btn-sm" onclick="app.addEvaluationRow()">+ Fila Evaluación</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="excel-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">#</th>
+                  <th style="min-width: 250px;">Evaluación / Certamen</th>
+                  <th style="width: 140px; text-align: center;">Ponderación (%)</th>
+                  <th style="width: 140px; text-align: center;">Nota (1.0 - 7.0)</th>
+                  <th style="width: 150px; text-align: center;">Aporte al Promedio</th>
+                  <th style="width: 110px; text-align: center;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="evaluations-table-body"></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2" style="text-align: right; padding-right: 1rem;">Total Ponderación y Promedio Acumulado:</td>
+                  <td id="footer-total-weight" style="text-align: center;">0%</td>
+                  <td id="footer-weighted-gpa" style="text-align: center; font-size: 1.05rem;" class="grade-blue">--</td>
+                  <td id="footer-total-points" style="text-align: center; color: var(--text-muted);">--</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- EXCEL: ANOTAR CONTROLES -->
+        <div class="excel-container">
+          <div class="excel-topbar">
+            <div>
+              <div class="excel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>Planilla Excel &mdash; Registro de Controles / Quizzes</span>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+                Todos los controles seleccionados valen lo mismo. Marca o desmarca la casilla para incluir o botar notas.
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <span class="excel-sync-tag" style="color: var(--success); border-color: rgba(74, 222, 128, 0.2);">
+                Promedio Controles: <strong id="controls-calculated-avg" style="margin-left: 4px;">--</strong>
+              </span>
+              <button class="btn btn-outline btn-sm" onclick="app.addControlRow()">+ Nuevo Control</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="excel-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">#</th>
+                  <th style="min-width: 220px;">Nombre del Control</th>
+                  <th style="width: 140px; text-align: center;">Fecha</th>
+                  <th style="width: 140px; text-align: center;">Nota (1.0 - 7.0)</th>
+                  <th style="width: 160px; text-align: center;">¿Contar para Promedio?</th>
+                  <th style="width: 130px; text-align: center;">Estado</th>
+                  <th style="width: 110px; text-align: center;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="controls-table-body"></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" style="text-align: right; padding-right: 1rem;">Resumen de Controles:</td>
+                  <td id="footer-controls-avg" style="text-align: center; font-size: 1.05rem;" class="grade-blue">--</td>
+                  <td id="footer-controls-count-info" style="text-align: center; font-size: 0.82rem; color: var(--text-muted);">0 contados de 0</td>
+                  <td colspan="2" style="font-size: 0.75rem; color: var(--success);">Enlazado automáticamente a Calificaciones ✓</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- PESTAÑA 2: ORGANIZADOR DE TAREAS & TEMPORIZADOR -->
+    <section id="tab-tasks" class="tab-content">
+      <div class="tasks-grid-layout">
+        
+        <!-- LISTA DE TAREAS -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+              <h2 style="font-size: 1.05rem; font-weight: 700; color: var(--text);">Casillas de Tareas por Hacer</h2>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem;">Marca tus pendientes y revisa el tiempo restante de cada entrega.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="app.openNewTaskModal()">+ Añadir Tarea</button>
+          </div>
+
+          <div style="display: flex; gap: 0.4rem; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 2px;">
+            <button class="btn btn-outline btn-sm" onclick="app.setTaskFilter('all', this)" style="font-weight: 700;">Todas</button>
+            <button class="btn btn-outline btn-sm" onclick="app.setTaskFilter('pending', this)">Pendientes</button>
+            <button class="btn btn-outline btn-sm" onclick="app.setTaskFilter('completed', this)">Completadas</button>
+          </div>
+
+          <div id="tasks-list-container"></div>
+        </div>
+
+        <!-- TEMPORIZADORES -->
+        <div>
+          <div class="countdown-panel">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              Temporizador de Fechas Límite (Cuenta Regresiva)
+            </h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Plazo disponible calculado en tiempo real antes de cada evaluación o entrega.
+            </p>
+            <div id="countdown-list-container"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: CALENDARIO MULTIMES -->
+    <section id="tab-calendar" class="tab-content">
+      <div class="calendar-box">
+        <div class="calendar-header">
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <button class="btn btn-outline btn-sm" onclick="app.changeMonth(-1)">
+              &larr; Mes Anterior
+            </button>
+            <span class="calendar-month-title" id="calendar-current-title">Octubre 2026</span>
+            <button class="btn btn-outline btn-sm" onclick="app.changeMonth(1)">
+              Mes Siguiente &rarr;
+            </button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <button class="btn btn-outline btn-sm" onclick="app.goToCurrentMonth()">Hoy</button>
+            <button class="btn btn-primary btn-sm" onclick="app.openNewTaskModal()">+ Agendar Actividad</button>
+          </div>
+        </div>
+
+        <div class="calendar-grid">
+          <div class="calendar-day-header">Lun</div>
+          <div class="calendar-day-header">Mar</div>
+          <div class="calendar-day-header">Mié</div>
+          <div class="calendar-day-header">Jue</div>
+          <div class="calendar-day-header">Vie</div>
+          <div class="calendar-day-header">Sáb</div>
+          <div class="calendar-day-header">Dom</div>
+        </div>
+        <div class="calendar-grid" id="calendar-days-container" style="margin-top: 4px;"></div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: APUNTES POR MATERIA Y SUBSECCIONES -->
+    <section id="tab-notes" class="tab-content">
+      <div id="notes-no-courses" style="display: none;">
+        <div class="empty-state-card">
+          <div class="empty-state-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <h2 class="empty-state-title">Añade una materia para empezar tus apuntes</h2>
+          <p class="empty-state-desc">
+            Podrás organizar tus apuntes y pendientes por cada materia en subsecciones temáticas.
+          </p>
+          <button class="btn btn-primary" onclick="app.openNewCourseModal()">+ Añadir Materia</button>
+        </div>
+      </div>
+
+      <div id="notes-active-view">
+        <!-- SEPARADOR DE MATERIAS EN APUNTES -->
+        <div class="course-bar">
+          <div style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;">Materia:</div>
+          <div class="course-tabs-list" id="notes-course-tabs-container"></div>
+        </div>
+
+        <div class="notes-container">
+          <div class="notes-header-bar">
+            <div>
+              <h2 style="font-size: 1.05rem; font-weight: 700; color: var(--text);" id="notes-current-course-title">Apuntes de la Materia</h2>
+              <p style="font-size: 0.78rem; color: var(--text-muted);">Organiza por módulos o temas, crea notas y marca las completadas.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="app.addSubsection()">
+              + Nueva Subsección
+            </button>
+          </div>
+
+          <!-- LISTA DE SUBSECCIONES -->
+          <div id="subsections-container" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: NUEVA MATERIA -->
+  <div class="modal-overlay" id="modal-new-course">
+    <div class="modal-card">
+      <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem;">Añadir Nueva Materia</h3>
+      <div class="form-group">
+        <label for="new-course-name">Nombre de la Materia / Asignatura</label>
+        <input type="text" id="new-course-name" class="form-control" placeholder="Ej. Cálculo, Marketing, etc.">
+      </div>
+      <div class="form-group">
+        <label for="new-course-color">Color Identificador</label>
+        <select id="new-course-color" class="form-control">
+          <option value="#2563eb">Azul</option>
+          <option value="#0f766e">Verde Oscuro</option>
+          <option value="#16a34a">Verde Lima</option>
+          <option value="#d97706">Ámbar / Naranja</option>
+          <option value="#7c3aed">Morado</option>
+          <option value="#dc2626">Rojo</option>
+          <option value="#0284c7">Cian</option>
+          <option value="#db2777">Rosa</option>
+        </select>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem;">
+        <button class="btn btn-outline" onclick="app.closeModals()">Cancelar</button>
+        <button class="btn btn-primary" onclick="app.saveNewCourse()">Crear Materia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NUEVA / EDITAR TAREA O ACTIVIDAD -->
+  <div class="modal-overlay" id="modal-new-task">
+    <div class="modal-card">
+      <input type="hidden" id="edit-task-id" value="">
+      <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem;" id="modal-task-title">Añadir Tarea o Entrega</h3>
+      <div class="form-group">
+        <label for="new-task-title">Descripción de la Tarea</label>
+        <input type="text" id="new-task-title" class="form-control" placeholder="Ej. Estudiar para Control o Entregar Informe">
+      </div>
+      <div class="form-group">
+        <label for="new-task-course">Materia Asociada</label>
+        <select id="new-task-course" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label for="new-task-date">Fecha y Hora Límite</label>
+        <input type="datetime-local" id="new-task-date" class="form-control">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem;">
+        <button class="btn btn-outline" onclick="app.closeModals()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-save-task" onclick="app.saveNewTask()">Guardar Tarea</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ASIGNAR / EDITAR CLASE DEL HORARIO -->
+  <div class="modal-overlay" id="modal-edit-slot">
+    <div class="modal-card">
+      <input type="hidden" id="slot-day" value="">
+      <input type="hidden" id="slot-block" value="">
+      <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;" id="modal-slot-title">Asignar Clase</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;" id="modal-slot-subtitle"></p>
+
+      <div class="form-group">
+        <label for="slot-course-select">Materia / Asignatura</label>
+        <select id="slot-course-select" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label for="slot-room-input">Sala / Aula / Modalidad (Opcional)</label>
+        <input type="text" id="slot-room-input" class="form-control" placeholder="Ej. Sala 204, Auditorio B, Online">
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+        <button class="btn btn-outline btn-sm" style="color: var(--danger);" onclick="app.removeSlotAssignment()">
+          Quitar Clase
+        </button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-outline" onclick="app.closeModals()">Cancelar</button>
+          <button class="btn btn-primary" onclick="app.saveSlotAssignment()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICACIÓN -->
+  <div class="toast" id="toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toast-text">Cambios guardados con éxito</span>
+  </div>
+
+  <script>
+    // --- ESTADO INICIAL 100% LIMPIO (SIN MATERIAS PRECARGADAS) ---
+    const EMPTY_PLANNER = {
+      activeCourseId: null,
+      courses: [],
+      tasks: [],
+      schedule: {}
+    };
+
+    class AcademicPlanner {
+      constructor() {
+        this.data = this.loadData();
+        if (!this.data.schedule) this.data.schedule = {};
+        const now = new Date();
+        this.currentCalDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        this.taskFilter = 'all';
+        this.init();
+      }
+
+      init() {
+        // Aplicar tema guardado
+        const savedTheme = localStorage.getItem('plannerTheme') || 'dark';
+        if (savedTheme === 'light') {
+          document.documentElement.classList.add('light-mode');
+        }
+        this.updateThemeIcon(savedTheme === 'light');
+
+        this.renderAll();
+        // Abrir pestaña Horario por defecto (primera)
+        const defaultTabBtn = document.querySelector(".nav-tab");
+        this.switchTab('tab-schedule', defaultTabBtn);
+        setInterval(() => this.renderCountdowns(), 60000);
+      }
+
+      toggleTheme() {
+        const isLight = document.documentElement.classList.toggle('light-mode');
+        localStorage.setItem('plannerTheme', isLight ? 'light' : 'dark');
+        this.updateThemeIcon(isLight);
+      }
+
+      updateThemeIcon(isLight) {
+        document.getElementById('theme-icon-dark').style.display = isLight ? 'block' : 'none';
+        document.getElementById('theme-icon-light').style.display = isLight ? 'none' : 'block';
+      }
+
+      loadData() {
+        // Limpiar cualquier residuo de datos precargados antiguos
+        const CLEAN_KEY = "planner_v3_clean_slate";
+        if (!localStorage.getItem(CLEAN_KEY)) {
+          localStorage.removeItem("uai_planner_master_data");
+          localStorage.removeItem("academic_planner_courses");
+          localStorage.setItem(CLEAN_KEY, "true");
+          return JSON.parse(JSON.stringify(EMPTY_PLANNER));
+        }
+
+        try {
+          const saved = localStorage.getItem("my_custom_academic_planner");
+          if (saved) return JSON.parse(saved);
+        } catch (e) {
+          console.error("Error cargando datos:", e);
+        }
+        return JSON.parse(JSON.stringify(EMPTY_PLANNER));
+      }
+
+      saveData() {
+        try {
+          localStorage.setItem("my_custom_academic_planner", JSON.stringify(this.data));
+          const badge = document.getElementById("save-status-badge");
+          if (badge) badge.style.opacity = "1";
+        } catch (e) {
+          console.error("Error guardando datos:", e);
+        }
+      }
+
+      switchTab(tabId, btn) {
+        document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+        document.querySelectorAll(".nav-tab").forEach(el => el.classList.remove("active"));
+        
+        document.getElementById(tabId).classList.add("active");
+        if (btn) btn.classList.add("active");
+
+        if (tabId === 'tab-schedule') {
+          this.renderSchedule();
+        } else if (tabId === 'tab-calendar') {
+          this.renderCalendar();
+        } else if (tabId === 'tab-tasks') {
+          this.renderTasks();
+          this.renderCountdowns();
+        } else if (tabId === 'tab-notes') {
+          this.renderNotes();
+        }
+      }
+
+      renderAll() {
+        if (!this.data.schedule) this.data.schedule = {};
+        this.renderSchedule();
+        const noCoursesView = document.getElementById("no-courses-view");
+        const coursesActiveView = document.getElementById("courses-active-view");
+
+        if (this.data.courses.length === 0) {
+          noCoursesView.style.display = "block";
+          coursesActiveView.style.display = "none";
+          this.data.activeCourseId = null;
+        } else {
+          noCoursesView.style.display = "none";
+          coursesActiveView.style.display = "block";
+
+          if (!this.data.activeCourseId || !this.data.courses.some(c => c.id === this.data.activeCourseId)) {
+            this.data.activeCourseId = this.data.courses[0].id;
+          }
+
+          this.renderCourseTabs();
+          this.renderCourseSummary();
+          this.renderEvaluationsExcel();
+          this.renderControlsExcel();
+        }
+
+        this.renderTasks();
+        this.renderCountdowns();
+        this.renderCalendar();
+        this.renderNotes();
+      }
+
+      getActiveCourse() {
+        return this.data.courses.find(c => c.id === this.data.activeCourseId) || null;
+      }
+
+      selectCourse(courseId) {
+        this.data.activeCourseId = courseId;
+        this.saveData();
+        this.renderCourseTabs();
+        this.renderCourseSummary();
+        this.renderEvaluationsExcel();
+        this.renderControlsExcel();
+        this.renderNotes();
+      }
+
+      deleteCurrentCourse() {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        if (confirm(`¿Estás seguro de eliminar la materia "${course.name}"? Se borrarán sus notas y controles.`)) {
+          this.data.courses = this.data.courses.filter(c => c.id !== course.id);
+          this.data.tasks = this.data.tasks.filter(t => t.courseId !== course.id);
+          this.data.activeCourseId = this.data.courses.length > 0 ? this.data.courses[0].id : null;
+          this.saveData();
+          this.renderAll();
+          this.showToast("Materia eliminada");
+        }
+      }
+
+      renderCourseTabs() {
+        const container = document.getElementById("course-tabs-container");
+        container.innerHTML = "";
+        
+        this.data.courses.forEach(c => {
+          const isActive = c.id === this.data.activeCourseId;
+          const pill = document.createElement("button");
+          pill.className = `course-pill ${isActive ? 'active' : ''}`;
+          pill.onclick = () => this.selectCourse(c.id);
+          pill.innerHTML = `
+            <span class="course-color-dot" style="background: ${c.color};"></span>
+            <span>${this.escapeHtml(c.name)}</span>
+          `;
+          container.appendChild(pill);
+        });
+      }
+
+      renderCourseSummary() {
+        const course = this.getActiveCourse();
+        const banner = document.getElementById("course-summary-banner");
+        if (!course) return;
+
+        const stats = this.calcCourseGPA(course);
+        const controlsAvg = this.calcControlsAverageOnly(course);
+
+        banner.innerHTML = `
+          <div class="metric-card ${parseFloat(stats.gpa) >= 4.0 ? 'success' : (stats.gpa === '--' ? '' : 'danger')}">
+            <div class="metric-title">Promedio Acumulado</div>
+            <div class="metric-value ${parseFloat(stats.gpa) >= 4.0 ? 'grade-blue' : (stats.gpa === '--' ? '' : 'grade-red')}">${stats.gpa}</div>
+            <div class="metric-sub">${stats.evaluatedWeight}% evaluado del ramo</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Ponderación Total</div>
+            <div class="metric-value" style="${stats.totalWeight !== 100 ? 'color: var(--warning);' : ''}">${stats.totalWeight}%</div>
+            <div class="metric-sub">${stats.totalWeight === 100 ? 'Ponderación completa (100%)' : 'Ajustar para sumar 100%'}</div>
+          </div>
+          <div class="metric-card success">
+            <div class="metric-title">Promedio Controles</div>
+            <div class="metric-value grade-blue">${controlsAvg}</div>
+            <div class="metric-sub">Auto-enlazado a la planilla</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Meta para Aprobar (4.0)</div>
+            <div class="metric-value" style="font-size: 1.4rem;">${stats.neededFor4}</div>
+            <div class="metric-sub">${stats.pendingWeight > 0 ? `En el ${stats.pendingWeight}% pendiente` : 'Ramo cerrado'}</div>
+          </div>
+        `;
+      }
+
+      calcCourseGPA(course) {
+        let weightedSum = 0;
+        let totalWeightWithGrade = 0;
+        let totalWeight = 0;
+
+        course.evaluations.forEach(ev => {
+          const w = parseFloat(ev.weight) || 0;
+          totalWeight += w;
+          if (ev.grade !== null && !isNaN(ev.grade) && ev.grade !== "") {
+            const g = parseFloat(ev.grade);
+            weightedSum += g * (w / 100);
+            totalWeightWithGrade += w;
+          }
+        });
+
+        const gpa = totalWeightWithGrade > 0 ? (weightedSum / (totalWeightWithGrade / 100)).toFixed(2) : "--";
+        const pendingWeight = Math.max(0, 100 - totalWeightWithGrade);
+
+        let neededFor4 = "--";
+        if (pendingWeight > 0) {
+          const req = (4.0 - weightedSum) / (pendingWeight / 100);
+          if (req > 7.0) neededFor4 = "Imposible (> 7.0)";
+          else if (req <= 1.0) neededFor4 = "Aprobado (≤ 1.0)";
+          else neededFor4 = req.toFixed(2);
+        } else if (totalWeightWithGrade > 0) {
+          neededFor4 = parseFloat(gpa) >= 4.0 ? "Aprobado ✓" : "Reprobado ✗";
+        }
+
+        return {
+          gpa,
+          weightedSum: weightedSum.toFixed(2),
+          totalWeight,
+          evaluatedWeight: totalWeightWithGrade,
+          pendingWeight,
+          neededFor4
+        };
+      }
+
+      renderEvaluationsExcel() {
+        const course = this.getActiveCourse();
+        const tbody = document.getElementById("evaluations-table-body");
+        tbody.innerHTML = "";
+
+        if (!course) return;
+
+        if (course.evaluations.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                No has agregado evaluaciones todavía. Haz clic en <strong>+ Fila Evaluación</strong> para comenzar.
+              </td>
+            </tr>
+          `;
+        }
+
+        course.evaluations.forEach((ev, idx) => {
+          const tr = document.createElement("tr");
+          const contribution = (ev.grade !== null && !isNaN(ev.grade) && ev.grade !== "")
+            ? (parseFloat(ev.grade) * (parseFloat(ev.weight || 0) / 100)).toFixed(2)
+            : "--";
+
+          tr.innerHTML = `
+            <td style="text-align: center; color: var(--text-muted); font-weight: 600;">${idx + 1}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="text" class="cell-input" value="${this.escapeHtml(ev.name)}"
+                  onchange="app.updateEvaluation(${idx}, 'name', this.value)" placeholder="Nombre de evaluación">
+                ${ev.isControlsLinked ? '<span class="excel-sync-tag" title="Esta nota toma el promedio de controles automáticamente">Enlazado a Controles</span>' : ''}
+              </div>
+            </td>
+            <td>
+              <input type="number" class="cell-input cell-number" value="${ev.weight !== null ? ev.weight : ''}" min="0" max="100" step="1"
+                placeholder="%" onchange="app.updateEvaluation(${idx}, 'weight', this.value)">
+            </td>
+            <td>
+              <input type="number" class="cell-input cell-number ${ev.grade !== null && ev.grade !== '' ? (parseFloat(ev.grade) >= 4.0 ? 'grade-blue' : 'grade-red') : ''}" 
+                value="${ev.grade !== null ? ev.grade : ''}" 
+                min="1.0" max="7.0" step="0.1" placeholder="Nota (1-7)"
+                ${ev.isControlsLinked ? 'readonly style="background: var(--bg-tertiary); cursor: not-allowed;" title="Esta nota se calcula automáticamente desde los controles"' : ''}
+                onchange="app.updateEvaluation(${idx}, 'grade', this.value)">
+            </td>
+            <td style="text-align: center; font-weight: 600; color: var(--text-muted);">
+              ${contribution} pts
+            </td>
+            <td style="text-align: center;">
+              <div class="reorder-btn-group">
+                <button class="btn-icon" onclick="app.moveEvaluation(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="Subir fila">▲</button>
+                <button class="btn-icon" onclick="app.moveEvaluation(${idx}, 1)" ${idx === course.evaluations.length - 1 ? 'disabled' : ''} title="Bajar fila">▼</button>
+                <button class="btn-icon" style="color: var(--danger); margin-left: 2px;" onclick="app.deleteEvaluation(${idx})" title="Eliminar fila">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        const stats = this.calcCourseGPA(course);
+        document.getElementById("footer-total-weight").textContent = `${stats.totalWeight}%`;
+        document.getElementById("footer-weighted-gpa").textContent = stats.gpa;
+        document.getElementById("footer-total-points").textContent = `${stats.weightedSum} pts acumulados`;
+      }
+
+      updateEvaluation(index, field, value) {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        if (field === 'weight') {
+          course.evaluations[index].weight = (value === "" || isNaN(value)) ? 0 : parseFloat(value);
+        } else if (field === 'grade') {
+          course.evaluations[index].grade = (value === "" || isNaN(value)) ? null : parseFloat(value);
+        } else {
+          course.evaluations[index][field] = value;
+        }
+
+        this.saveData();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+        this.showToast("Calificación actualizada");
+      }
+
+      addEvaluationRow(isControlsLinked = false) {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        const nextNum = course.evaluations.length + 1;
+        course.evaluations.push({
+          id: "ev_" + Date.now(),
+          name: isControlsLinked ? "Promedio de Controles" : `Evaluación ${nextNum}`,
+          weight: 20,
+          grade: null,
+          isControlsLinked: isControlsLinked
+        });
+
+        if (isControlsLinked) {
+          this.recalcControlsAverage(course);
+        }
+
+        this.saveData();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+        this.showToast("Fila agregada");
+      }
+
+      deleteEvaluation(index) {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        course.evaluations.splice(index, 1);
+        this.saveData();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+        this.showToast("Evaluación eliminada");
+      }
+
+      moveEvaluation(index, direction) {
+        const course = this.getActiveCourse();
+        if (!course || !course.evaluations) return;
+
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= course.evaluations.length) return;
+
+        const temp = course.evaluations[index];
+        course.evaluations[index] = course.evaluations[targetIndex];
+        course.evaluations[targetIndex] = temp;
+
+        this.saveData();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+      }
+
+      calcControlsAverageOnly(course) {
+        if (!course.controls || course.controls.length === 0) return "--";
+
+        const counted = course.controls.filter(ctrl => ctrl.count === true && ctrl.grade !== null && !isNaN(ctrl.grade));
+        if (counted.length === 0) return "--";
+
+        const sum = counted.reduce((acc, c) => acc + parseFloat(c.grade), 0);
+        return (sum / counted.length).toFixed(2);
+      }
+
+      recalcControlsAverage(course) {
+        const avgStr = this.calcControlsAverageOnly(course);
+        const avgNum = avgStr === "--" ? null : parseFloat(avgStr);
+
+        const linkedEval = course.evaluations.find(e => e.isControlsLinked === true);
+        if (linkedEval) {
+          linkedEval.grade = avgNum;
+        }
+      }
+
+      renderControlsExcel() {
+        const course = this.getActiveCourse();
+        const tbody = document.getElementById("controls-table-body");
+        tbody.innerHTML = "";
+
+        if (!course) return;
+
+        this.recalcControlsAverage(course);
+
+        const avgStr = this.calcControlsAverageOnly(course);
+        document.getElementById("controls-calculated-avg").textContent = avgStr;
+        document.getElementById("footer-controls-avg").textContent = avgStr;
+
+        const totalCount = course.controls.length;
+        const activeCount = course.controls.filter(c => c.count).length;
+        document.getElementById("footer-controls-count-info").textContent = `${activeCount} contados de ${totalCount} totales`;
+
+        if (course.controls.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                No has registrado controles todavía. Haz clic en <strong>+ Nuevo Control</strong> para agregar uno.
+              </td>
+            </tr>
+          `;
+        }
+
+        course.controls.forEach((ctrl, idx) => {
+          const tr = document.createElement("tr");
+          if (!ctrl.count) tr.className = "row-excluded";
+
+          const gradeVal = (ctrl.grade !== null && !isNaN(ctrl.grade) && ctrl.grade !== "") ? parseFloat(ctrl.grade) : null;
+          let statusBadge = `<span style="color: var(--text-muted); font-size: 0.78rem;">Pendiente</span>`;
+          if (gradeVal !== null) {
+            statusBadge = gradeVal >= 4.0 
+              ? `<span style="color: var(--success); font-weight: 700; font-size: 0.78rem;">✓ Aprobado</span>`
+              : `<span style="color: var(--danger); font-weight: 700; font-size: 0.78rem;">✗ Reprobado</span>`;
+          }
+
+          tr.innerHTML = `
+            <td style="text-align: center; color: var(--text-muted); font-weight: 600;">${idx + 1}</td>
+            <td>
+              <input type="text" class="cell-input" value="${this.escapeHtml(ctrl.name)}"
+                onchange="app.updateControl(${idx}, 'name', this.value)" placeholder="Nombre del Control">
+            </td>
+            <td>
+              <input type="date" class="cell-input cell-center" value="${ctrl.date || ''}"
+                onchange="app.updateControl(${idx}, 'date', this.value)">
+            </td>
+            <td>
+              <input type="number" class="cell-input cell-number ${gradeVal !== null ? (gradeVal >= 4.0 ? 'grade-blue' : 'grade-red') : ''}"
+                value="${ctrl.grade !== null ? ctrl.grade : ''}" min="1.0" max="7.0" step="0.1" placeholder="Nota"
+                onchange="app.updateControl(${idx}, 'grade', this.value)">
+            </td>
+            <td style="text-align: center;">
+              <input type="checkbox" class="custom-checkbox" ${ctrl.count ? 'checked' : ''}
+                onchange="app.toggleControlCount(${idx}, this.checked)" title="Marcar para contar o desmarcar para botar">
+            </td>
+            <td style="text-align: center;">${statusBadge}</td>
+            <td style="text-align: center;">
+              <div class="reorder-btn-group">
+                <button class="btn-icon" onclick="app.moveControl(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="Subir fila">▲</button>
+                <button class="btn-icon" onclick="app.moveControl(${idx}, 1)" ${idx === course.controls.length - 1 ? 'disabled' : ''} title="Bajar fila">▼</button>
+                <button class="btn-icon" style="color: var(--danger); margin-left: 2px;" onclick="app.deleteControl(${idx})" title="Eliminar control">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      updateControl(index, field, value) {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        if (field === 'grade') {
+          course.controls[index].grade = (value === "" || isNaN(value)) ? null : parseFloat(value);
+        } else {
+          course.controls[index][field] = value;
+        }
+
+        this.recalcControlsAverage(course);
+        this.saveData();
+        this.renderControlsExcel();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+        this.showToast("Control actualizado");
+      }
+
+      toggleControlCount(index, isChecked) {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        course.controls[index].count = isChecked;
+        this.recalcControlsAverage(course);
+        this.saveData();
+        this.renderControlsExcel();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+        this.showToast(isChecked ? "Control incluido en promedio" : "Control botado (no se cuenta)");
+      }
+
+      addControlRow() {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        const nextNum = course.controls.length + 1;
+        course.controls.push({
+          id: "ctrl_" + Date.now(),
+          name: `Control ${nextNum}`,
+          date: new Date().toISOString().split("T")[0],
+          grade: null,
+          count: true
+        });
+
+        // Asegurar que exista una fila enlazada en evaluations si aún no está
+        if (!course.evaluations.some(e => e.isControlsLinked)) {
+          course.evaluations.push({
+            id: "ev_ctrl_linked",
+            name: "Promedio de Controles",
+            weight: 20,
+            grade: null,
+            isControlsLinked: true
+          });
+        }
+
+        this.recalcControlsAverage(course);
+        this.saveData();
+        this.renderControlsExcel();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+        this.showToast("Nuevo control añadido");
+      }
+
+      deleteControl(index) {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        course.controls.splice(index, 1);
+        this.recalcControlsAverage(course);
+        this.saveData();
+        this.renderControlsExcel();
+        this.renderEvaluationsExcel();
+        this.renderCourseSummary();
+        this.showToast("Control eliminado");
+      }
+
+      moveControl(index, direction) {
+        const course = this.getActiveCourse();
+        if (!course || !course.controls) return;
+
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= course.controls.length) return;
+
+        const temp = course.controls[index];
+        course.controls[index] = course.controls[targetIndex];
+        course.controls[targetIndex] = temp;
+
+        this.saveData();
+        this.renderControlsExcel();
+      }
+
+      getCountdownInfo(dueDateStr) {
+        if (!dueDateStr) return { text: "Sin fecha", className: "countdown-expired" };
+
+        const due = new Date(dueDateStr);
+        const now = new Date();
+        const diffMs = due - now;
+
+        if (diffMs < 0) {
+          const pastDays = Math.floor(Math.abs(diffMs) / (1000 * 60 * 60 * 24));
+          return {
+            text: pastDays === 0 ? "Venció hoy" : `Vencido hace ${pastDays}d`,
+            className: "countdown-expired"
+          };
+        }
+
+        const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const days = Math.floor(totalHours / 24);
+        const hours = totalHours % 24;
+
+        if (days === 0) {
+          return {
+            text: `¡Vence hoy! (${hours}h restantes)`,
+            className: "countdown-urgent"
+          };
+        } else if (days === 1) {
+          return {
+            text: `Mañana (${hours}h restantes)`,
+            className: "countdown-urgent"
+          };
+        } else if (days <= 3) {
+          return {
+            text: `En ${days} días`,
+            className: "countdown-warning"
+          };
+        } else {
+          return {
+            text: `En ${days} días`,
+            className: "countdown-safe"
+          };
+        }
+      }
+
+      setTaskFilter(filter, btn) {
+        this.taskFilter = filter;
+        document.querySelectorAll("#tab-tasks .btn").forEach(b => b.style.fontWeight = "normal");
+        if (btn) btn.style.fontWeight = "700";
+        this.renderTasks();
+      }
+
+      renderTasks() {
+        const container = document.getElementById("tasks-list-container");
+        container.innerHTML = "";
+
+        let filtered = this.data.tasks;
+        if (this.taskFilter === 'pending') filtered = filtered.filter(t => !t.completed);
+        else if (this.taskFilter === 'completed') filtered = filtered.filter(t => t.completed);
+
+        if (filtered.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 2.5rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: 10px;">
+              <p style="color: var(--text-muted); font-size: 0.9rem;">No hay tareas registradas.</p>
+              <button class="btn btn-primary btn-sm" style="margin-top: 0.75rem;" onclick="app.openNewTaskModal()">+ Añadir una tarea</button>
+            </div>
+          `;
+          return;
+        }
+
+        filtered.forEach(task => {
+          const course = this.data.courses.find(c => c.id === task.courseId);
+          const countdown = this.getCountdownInfo(task.dueDate);
+          const formattedDate = task.dueDate ? new Date(task.dueDate).toLocaleString([], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Sin fecha';
+
+          const card = document.createElement("div");
+          card.className = `task-card ${task.completed ? 'completed' : ''}`;
+          card.innerHTML = `
+            <input type="checkbox" class="custom-checkbox" ${task.completed ? 'checked' : ''}
+              onchange="app.toggleTaskCompleted('${task.id}', this.checked)">
+            <div class="task-body">
+              <span class="task-text">${this.escapeHtml(task.title)}</span>
+              <div class="task-meta">
+                ${course ? `
+                  <span style="display: flex; align-items: center; gap: 4px; font-weight: 600; color: ${course.color};">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: ${course.color}; display: inline-block;"></span>
+                    ${this.escapeHtml(course.name)}
+                  </span>
+                  &bull;
+                ` : ''}
+                <span>📅 ${formattedDate}</span>
+                <span class="countdown-badge ${countdown.className}">⏱ ${countdown.text}</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <button class="btn btn-outline btn-sm" style="border: none; padding: 0.3rem 0.5rem;" onclick="app.openEditTaskModal('${task.id}')" title="Editar tarea">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              </button>
+              <button class="btn btn-outline btn-sm" style="color: var(--danger); border: none; padding: 0.3rem 0.5rem;" onclick="app.deleteTask('${task.id}')" title="Eliminar tarea">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
+              </button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      renderCountdowns() {
+        const container = document.getElementById("countdown-list-container");
+        if (!container) return;
+        container.innerHTML = "";
+
+        const pending = this.data.tasks
+          .filter(t => !t.completed && t.dueDate)
+          .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+        if (pending.length === 0) {
+          container.innerHTML = `<p style="font-size: 0.82rem; color: var(--text-muted);">No tienes tareas pendientes próximas.</p>`;
+          return;
+        }
+
+        pending.forEach(task => {
+          const course = this.data.courses.find(c => c.id === task.courseId);
+          const countdown = this.getCountdownInfo(task.dueDate);
+
+          const item = document.createElement("div");
+          item.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); gap: 0.5rem;";
+          item.innerHTML = `
+            <div style="flex: 1; overflow: hidden;">
+              <strong style="font-size: 0.85rem; display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--text);">${this.escapeHtml(task.title)}</strong>
+              <small style="font-size: 0.72rem; color: ${course ? course.color : 'var(--text-muted)'}; font-weight: 600;">
+                ${course ? this.escapeHtml(course.name) : 'General'}
+              </small>
+            </div>
+            <span class="countdown-badge ${countdown.className}" style="white-space: nowrap;">${countdown.text}</span>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      toggleTaskCompleted(taskId, completed) {
+        const task = this.data.tasks.find(t => t.id === taskId);
+        if (task) {
+          task.completed = completed;
+          this.saveData();
+          this.renderTasks();
+          this.renderCountdowns();
+          this.renderCalendar();
+          this.showToast(completed ? "Tarea completada ✓" : "Tarea pendiente");
+        }
+      }
+
+      deleteTask(taskId) {
+        this.data.tasks = this.data.tasks.filter(t => t.id !== taskId);
+        this.saveData();
+        this.renderTasks();
+        this.renderCountdowns();
+        this.renderCalendar();
+        this.showToast("Tarea eliminada");
+      }
+
+      changeMonth(offset) {
+        this.currentCalDate.setMonth(this.currentCalDate.getMonth() + offset);
+        this.renderCalendar();
+      }
+
+      goToCurrentMonth() {
+        const now = new Date();
+        this.currentCalDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        this.renderCalendar();
+      }
+
+      renderCalendar() {
+        const container = document.getElementById("calendar-days-container");
+        const titleEl = document.getElementById("calendar-current-title");
+        if (!container || !titleEl) return;
+
+        const year = this.currentCalDate.getFullYear();
+        const month = this.currentCalDate.getMonth();
+
+        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        titleEl.textContent = `${monthNames[month]} ${year}`;
+
+        container.innerHTML = "";
+
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+
+        let startDay = firstDayOfMonth.getDay() - 1;
+        if (startDay === -1) startDay = 6;
+
+        const prevMonthLastDay = new Date(year, month, 0).getDate();
+
+        // Días del mes anterior
+        for (let i = startDay - 1; i >= 0; i--) {
+          const cell = document.createElement("div");
+          cell.className = "calendar-cell other-month";
+          cell.innerHTML = `
+            <div class="cal-cell-header">
+              <span class="cal-day-number" style="opacity: 0.4;">${prevMonthLastDay - i}</span>
+            </div>
+          `;
+          container.appendChild(cell);
+        }
+
+        const today = new Date();
+        const isCurrentMonthReal = (today.getFullYear() === year && today.getMonth() === month);
+
+        // Días del mes actual
+        for (let d = 1; d <= lastDayOfMonth.getDate(); d++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const isToday = isCurrentMonthReal && (today.getDate() === d);
+
+          const dayTasks = this.data.tasks.filter(t => t.dueDate && t.dueDate.startsWith(dateStr));
+
+          const cell = document.createElement("div");
+          cell.className = `calendar-cell ${isToday ? 'today' : ''}`;
+
+          let tasksHtml = "";
+          if (dayTasks.length > 0) {
+            dayTasks.forEach(t => {
+              const course = this.data.courses.find(c => c.id === t.courseId);
+              const courseColor = course ? course.color : '#888888';
+              const courseName = course ? this.escapeHtml(course.name) : 'General';
+              
+              // Extraer hora si existe
+              let timeStr = "";
+              if (t.dueDate.includes("T")) {
+                const parts = t.dueDate.split("T")[1];
+                if (parts) timeStr = parts.substring(0, 5);
+              }
+
+              tasksHtml += `
+                <div class="cal-task-card ${t.completed ? 'completed' : ''}"
+                     style="border-left-color: ${courseColor};"
+                     onclick="app.toggleTaskCompleted('${t.id}', ${!t.completed})"
+                     title="${this.escapeHtml(t.title)} (${courseName}) — Clic para marcar/desmarcar">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px;">
+                    <div class="cal-task-title">${t.completed ? '✓ ' : ''}${this.escapeHtml(t.title)}</div>
+                    <button class="btn-icon" style="padding: 0 3px; font-size: 0.7rem; opacity: 0.7;"
+                            onclick="event.stopPropagation(); app.openEditTaskModal('${t.id}')" title="Editar actividad">
+                      ✏️
+                    </button>
+                  </div>
+                  <div class="cal-task-meta">
+                    <span class="cal-task-course-tag" style="color: ${courseColor};">${courseName}</span>
+                    ${timeStr ? `<span class="cal-task-time">⏰ ${timeStr}</span>` : ''}
+                  </div>
+                </div>
+              `;
+            });
+          }
+
+          cell.innerHTML = `
+            <div class="cal-cell-header">
+              <span class="cal-day-number">${d}</span>
+              <button class="cal-add-btn" onclick="event.stopPropagation(); app.openNewTaskModal('${dateStr}')" title="Agendar actividad para el ${d}">+ Tarea</button>
+            </div>
+            <div class="cal-tasks-container">
+              ${tasksHtml}
+            </div>
+          `;
+
+          container.appendChild(cell);
+        }
+
+        // Días del mes siguiente para completar la cuadrícula
+        const totalRendered = startDay + lastDayOfMonth.getDate();
+        const remaining = 7 - (totalRendered % 7);
+        if (remaining < 7) {
+          for (let nextD = 1; nextD <= remaining; nextD++) {
+            const cell = document.createElement("div");
+            cell.className = "calendar-cell other-month";
+            cell.innerHTML = `
+              <div class="cal-cell-header">
+                <span class="cal-day-number" style="opacity: 0.4;">${nextD}</span>
+              </div>
+            `;
+            container.appendChild(cell);
+          }
+        }
+      }
+
+      openNewCourseModal() {
+        document.getElementById("new-course-name").value = "";
+        document.getElementById("modal-new-course").classList.add("open");
+        setTimeout(() => document.getElementById("new-course-name").focus(), 100);
+      }
+
+      saveNewCourse() {
+        const name = document.getElementById("new-course-name").value.trim();
+        const color = document.getElementById("new-course-color").value;
+        if (!name) {
+          alert("Por favor ingresa un nombre para la materia.");
+          return;
+        }
+
+        const newId = "c_" + Date.now();
+        this.data.courses.push({
+          id: newId,
+          name: name,
+          color: color,
+          evaluations: [
+            { id: "e_" + Date.now() + "_1", name: "Evaluación 1", weight: 30, grade: null, isControlsLinked: false },
+            { id: "e_" + Date.now() + "_2", name: "Evaluación 2", weight: 30, grade: null, isControlsLinked: false },
+            { id: "e_" + Date.now() + "_ctrl", name: "Promedio de Controles", weight: 20, grade: null, isControlsLinked: true },
+            { id: "e_" + Date.now() + "_exam", name: "Examen", weight: 20, grade: null, isControlsLinked: false }
+          ],
+          controls: []
+        });
+
+        this.data.activeCourseId = newId;
+        this.saveData();
+        this.closeModals();
+        this.renderAll();
+        this.showToast(`Materia "${name}" creada`);
+      }
+
+      openNewTaskModal(prefillDate = null) {
+        document.getElementById("edit-task-id").value = "";
+        document.getElementById("modal-task-title").textContent = "Añadir Tarea o Entrega";
+        document.getElementById("btn-save-task").textContent = "Guardar Tarea";
+
+        const select = document.getElementById("new-task-course");
+        select.innerHTML = '<option value="">-- General (Sin Materia) --</option>';
+        this.data.courses.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.textContent = c.name;
+          if (c.id === this.data.activeCourseId) opt.selected = true;
+          select.appendChild(opt);
+        });
+
+        document.getElementById("new-task-title").value = "";
+        
+        // Prefijar fecha si se abrió desde una casilla específica
+        const dateInput = document.getElementById("new-task-date");
+        if (prefillDate) {
+          dateInput.value = `${prefillDate}T09:00`;
+        } else {
+          dateInput.value = "";
+        }
+        
+        document.getElementById("modal-new-task").classList.add("open");
+        setTimeout(() => document.getElementById("new-task-title").focus(), 100);
+      }
+
+      openEditTaskModal(taskId) {
+        const task = this.data.tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        document.getElementById("edit-task-id").value = task.id;
+        document.getElementById("modal-task-title").textContent = "Editar Actividad / Tarea";
+        document.getElementById("btn-save-task").textContent = "Guardar Cambios";
+
+        const select = document.getElementById("new-task-course");
+        select.innerHTML = '<option value="">-- General (Sin Materia) --</option>';
+        this.data.courses.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.textContent = c.name;
+          if (c.id === task.courseId) opt.selected = true;
+          select.appendChild(opt);
+        });
+
+        document.getElementById("new-task-title").value = task.title;
+        document.getElementById("new-task-date").value = task.dueDate || "";
+
+        document.getElementById("modal-new-task").classList.add("open");
+        setTimeout(() => document.getElementById("new-task-title").focus(), 100);
+      }
+
+      saveNewTask() {
+        const editId = document.getElementById("edit-task-id").value;
+        const title = document.getElementById("new-task-title").value.trim();
+        const courseId = document.getElementById("new-task-course").value;
+        const dueDate = document.getElementById("new-task-date").value;
+
+        if (!title) {
+          alert("Por favor ingresa una descripción para la tarea.");
+          return;
+        }
+
+        if (editId) {
+          // Edición de tarea existente
+          const existing = this.data.tasks.find(t => t.id === editId);
+          if (existing) {
+            existing.title = title;
+            existing.courseId = courseId;
+            existing.dueDate = dueDate || null;
+            this.showToast("Actividad actualizada");
+          }
+        } else {
+          // Creación de nueva tarea
+          this.data.tasks.push({
+            id: "t_" + Date.now(),
+            courseId: courseId,
+            title: title,
+            dueDate: dueDate || null,
+            completed: false
+          });
+          this.showToast("Tarea guardada");
+        }
+
+        this.saveData();
+        this.closeModals();
+        this.renderTasks();
+        this.renderCountdowns();
+        this.renderCalendar();
+      }
+
+      closeModals() {
+        document.querySelectorAll(".modal-overlay").forEach(m => m.classList.remove("open"));
+      }
+
+      showToast(msg) {
+        const toast = document.getElementById("toast");
+        document.getElementById("toast-text").textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2800);
+      }
+
+      renderNotes() {
+        const notesNoCourses = document.getElementById("notes-no-courses");
+        const notesActiveView = document.getElementById("notes-active-view");
+        const courseTabs = document.getElementById("notes-course-tabs-container");
+        const titleEl = document.getElementById("notes-current-course-title");
+        const subContainer = document.getElementById("subsections-container");
+
+        if (!notesNoCourses || !notesActiveView) return;
+
+        if (this.data.courses.length === 0) {
+          notesNoCourses.style.display = "block";
+          notesActiveView.style.display = "none";
+          return;
+        }
+
+        notesNoCourses.style.display = "none";
+        notesActiveView.style.display = "block";
+
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        // Render pestañas de materias en Apuntes
+        courseTabs.innerHTML = "";
+        this.data.courses.forEach(c => {
+          const isActive = c.id === this.data.activeCourseId;
+          const pill = document.createElement("button");
+          pill.className = `course-pill ${isActive ? 'active' : ''}`;
+          pill.onclick = () => this.selectCourse(c.id);
+          pill.innerHTML = `
+            <span class="course-color-dot" style="background: ${c.color};"></span>
+            <span>${this.escapeHtml(c.name)}</span>
+          `;
+          courseTabs.appendChild(pill);
+        });
+
+        titleEl.textContent = `Apuntes & Temas — ${course.name}`;
+
+        // Inicializar subsecciones si no existen
+        if (!course.subsections) {
+          course.subsections = [];
+        }
+
+        subContainer.innerHTML = "";
+
+        if (course.subsections.length === 0) {
+          subContainer.innerHTML = `
+            <div style="text-align: center; padding: 2.5rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: 8px;">
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.75rem;">No tienes subsecciones creadas en esta materia aún.</p>
+              <button class="btn btn-primary btn-sm" onclick="app.addSubsection()">+ Crear Primera Subsección</button>
+            </div>
+          `;
+          return;
+        }
+
+        course.subsections.forEach((sub, subIdx) => {
+          const card = document.createElement("div");
+          card.className = "subsection-card";
+
+          if (!sub.notes) sub.notes = [];
+
+          const completedCount = sub.notes.filter(n => n.completed).length;
+          const totalCount = sub.notes.length;
+
+          let notesHtml = "";
+          if (sub.notes.length === 0) {
+            notesHtml = `<p style="font-size: 0.8rem; color: var(--text-subtle); padding: 0.5rem 0;">Sin apuntes aún. Haz clic en "+ Apunte" para agregar el primero.</p>`;
+          } else {
+            sub.notes.forEach((note, noteIdx) => {
+              notesHtml += `
+                <div class="note-item ${note.completed ? 'completed' : ''}">
+                  <input type="checkbox" class="custom-checkbox" ${note.completed ? 'checked' : ''}
+                    onchange="app.toggleNoteCompleted(${subIdx}, ${noteIdx}, this.checked)" title="Marcar como completado">
+                  <input type="text" class="note-input" value="${this.escapeHtml(note.text)}"
+                    placeholder="Escribe tu apunte aquí..."
+                    onchange="app.updateNoteText(${subIdx}, ${noteIdx}, this.value)">
+                  <span class="note-date-badge">${note.date || ''}</span>
+                  <div class="reorder-btn-group">
+                    <button class="btn-icon" onclick="app.moveNote(${subIdx}, ${noteIdx}, -1)" ${noteIdx === 0 ? 'disabled' : ''} title="Subir apunte">▲</button>
+                    <button class="btn-icon" onclick="app.moveNote(${subIdx}, ${noteIdx}, 1)" ${noteIdx === sub.notes.length - 1 ? 'disabled' : ''} title="Bajar apunte">▼</button>
+                    <button class="btn-icon" style="color: var(--danger); margin-left: 2px;"
+                      onclick="app.deleteNoteFromSubsection(${subIdx}, ${noteIdx})" title="Eliminar apunte">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
+                    </button>
+                  </div>
+                </div>
+              `;
+            });
+          }
+
+          card.innerHTML = `
+            <div class="subsection-header">
+              <div class="subsection-title-area">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${course.color}" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle></svg>
+                <input type="text" class="subsection-title-input" value="${this.escapeHtml(sub.title)}"
+                  placeholder="Nombre de la subsección (ej. Unidad 1, Capítulos, etc.)"
+                  onchange="app.updateSubsectionTitle(${subIdx}, this.value)">
+                <span class="subsection-stats">${completedCount}/${totalCount} completados</span>
+              </div>
+              <div style="display: flex; gap: 0.4rem; align-items: center;">
+                <div class="reorder-btn-group">
+                  <button class="btn-icon" onclick="app.moveSubsection(${subIdx}, -1)" ${subIdx === 0 ? 'disabled' : ''} title="Subir subsección">▲</button>
+                  <button class="btn-icon" onclick="app.moveSubsection(${subIdx}, 1)" ${subIdx === course.subsections.length - 1 ? 'disabled' : ''} title="Bajar subsección">▼</button>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="app.addNoteToSubsection(${subIdx})">
+                  + Apunte
+                </button>
+                <button class="btn btn-outline btn-sm" style="color: var(--danger); border: none;" onclick="app.deleteSubsection(${subIdx})" title="Eliminar subsección">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
+                </button>
+              </div>
+            </div>
+            <div class="notes-list">
+              ${notesHtml}
+            </div>
+          `;
+
+          subContainer.appendChild(card);
+        });
+      }
+
+      addSubsection() {
+        const course = this.getActiveCourse();
+        if (!course) return;
+
+        if (!course.subsections) course.subsections = [];
+
+        const nextNum = course.subsections.length + 1;
+        course.subsections.push({
+          id: "sub_" + Date.now(),
+          title: `Subsección ${nextNum}`,
+          notes: []
+        });
+
+        this.saveData();
+        this.renderNotes();
+        this.showToast("Subsección añadida");
+      }
+
+      deleteSubsection(subIdx) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections) return;
+
+        const sub = course.subsections[subIdx];
+        if (confirm(`¿Eliminar la subsección "${sub.title}" y todos sus apuntes?`)) {
+          course.subsections.splice(subIdx, 1);
+          this.saveData();
+          this.renderNotes();
+          this.showToast("Subsección eliminada");
+        }
+      }
+
+      updateSubsectionTitle(subIdx, newTitle) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections) return;
+
+        course.subsections[subIdx].title = newTitle.trim() || `Subsección ${subIdx + 1}`;
+        this.saveData();
+        this.showToast("Título actualizado");
+      }
+
+      addNoteToSubsection(subIdx) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections) return;
+
+        const sub = course.subsections[subIdx];
+        if (!sub.notes) sub.notes = [];
+
+        const todayStr = new Date().toLocaleDateString([], { day: '2-digit', month: 'short' });
+        sub.notes.push({
+          id: "note_" + Date.now(),
+          text: "",
+          completed: false,
+          date: todayStr
+        });
+
+        this.saveData();
+        this.renderNotes();
+
+        // Dar foco automáticamente al input del nuevo apunte
+        setTimeout(() => {
+          const inputs = document.querySelectorAll(".note-input");
+          if (inputs.length > 0) {
+            inputs[inputs.length - 1].focus();
+          }
+        }, 50);
+      }
+
+      toggleNoteCompleted(subIdx, noteIdx, isChecked) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections) return;
+
+        course.subsections[subIdx].notes[noteIdx].completed = isChecked;
+        this.saveData();
+        this.renderNotes();
+        this.showToast(isChecked ? "Apunte completado ✓" : "Apunte pendiente");
+      }
+
+      updateNoteText(subIdx, noteIdx, text) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections) return;
+
+        course.subsections[subIdx].notes[noteIdx].text = text;
+        this.saveData();
+        this.showToast("Apunte guardado");
+      }
+
+      deleteNoteFromSubsection(subIdx, noteIdx) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections) return;
+
+        course.subsections[subIdx].notes.splice(noteIdx, 1);
+        this.saveData();
+        this.renderNotes();
+        this.showToast("Apunte eliminado");
+      }
+
+      moveSubsection(subIdx, direction) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections) return;
+
+        const targetIdx = subIdx + direction;
+        if (targetIdx < 0 || targetIdx >= course.subsections.length) return;
+
+        const temp = course.subsections[subIdx];
+        course.subsections[subIdx] = course.subsections[targetIdx];
+        course.subsections[targetIdx] = temp;
+
+        this.saveData();
+        this.renderNotes();
+      }
+
+      moveNote(subIdx, noteIdx, direction) {
+        const course = this.getActiveCourse();
+        if (!course || !course.subsections || !course.subsections[subIdx]) return;
+
+        const notes = course.subsections[subIdx].notes;
+        const targetIdx = noteIdx + direction;
+        if (targetIdx < 0 || targetIdx >= notes.length) return;
+
+        const temp = notes[noteIdx];
+        notes[noteIdx] = notes[targetIdx];
+        notes[targetIdx] = temp;
+
+        this.saveData();
+        this.renderNotes();
+      }
+
+      exportBackup() {
+        const dataStr = JSON.stringify(this.data, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const dateStr = new Date().toISOString().split("T")[0];
+        a.href = url;
+        a.download = `Agenda_M1_Respaldo_${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.showToast("Copia de respaldo descargada");
+      }
+
+      importBackup(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const imported = JSON.parse(e.target.result);
+            if (!imported || !Array.isArray(imported.courses)) {
+              alert("El archivo seleccionado no tiene el formato correcto de la agenda.");
+              return;
+            }
+
+            if (confirm("¿Deseas reemplazar los datos actuales con los del archivo de respaldo?")) {
+              this.data = imported;
+              this.saveData();
+              this.renderAll();
+              this.showToast("Agenda cargada con éxito ✓");
+            }
+          } catch (err) {
+            alert("Error al leer el archivo de respaldo: " + err.message);
+          }
+          event.target.value = "";
+        };
+        reader.readAsText(file);
+      }
+
+      // ==========================================
+      // HORARIO SEMANAL DE CLASES
+      // ==========================================
+      getScheduleBlocks() {
+        return [
+          { type: 'block', id: 'm1', label: 'Bloque 1', time: '08:30 – 09:40' },
+          { type: 'break', label: 'Break (20 min)', time: '09:40 – 10:00' },
+          { type: 'block', id: 'm2', label: 'Bloque 2', time: '10:00 – 11:10' },
+          { type: 'break', label: 'Break (20 min)', time: '11:10 – 11:30' },
+          { type: 'block', id: 'm3', label: 'Bloque 3', time: '11:30 – 12:40' },
+          { type: 'break', label: 'Break (20 min)', time: '12:40 – 13:00' },
+          { type: 'block', id: 'm4', label: 'Bloque 4', time: '13:00 – 14:10' },
+          { type: 'break', label: 'Almuerzo / Receso', time: '14:10 – 15:00' },
+          { type: 'block', id: 't1', label: 'Bloque 5', time: '15:00 – 16:10' },
+          { type: 'break', label: 'Break (20 min)', time: '16:10 – 16:30' },
+          { type: 'block', id: 't2', label: 'Bloque 6', time: '16:30 – 17:40' }
+        ];
+      }
+
+      renderSchedule() {
+        const tbody = document.getElementById("schedule-table-body");
+        if (!tbody) return;
+
+        if (!this.data.schedule) this.data.schedule = {};
+
+        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        const blocks = this.getScheduleBlocks();
+
+        tbody.innerHTML = "";
+
+        blocks.forEach(b => {
+          const tr = document.createElement("tr");
+
+          if (b.type === 'break') {
+            tr.innerHTML = `
+              <td class="break-cell" style="font-weight: 600;">${b.time}</td>
+              <td class="break-cell" colspan="5">${b.label}</td>
+            `;
+          } else {
+            let cellsHtml = `
+              <td class="time-cell">
+                <div style="font-weight: 700; color: var(--text);">${b.label}</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">${b.time}</div>
+              </td>
+            `;
+
+            days.forEach(day => {
+              const slotKey = `${day}_${b.id}`;
+              const assignment = this.data.schedule[slotKey] || null;
+
+              if (assignment) {
+                const course = this.data.courses.find(c => c.id === assignment.courseId);
+                const courseColor = course ? course.color : '#888888';
+                const courseName = course ? this.escapeHtml(course.name) : (assignment.customName || 'Materia');
+
+                cellsHtml += `
+                  <td>
+                    <div class="schedule-slot assigned" style="border-left-color: ${courseColor};"
+                         onclick="app.openEditSlotModal('${day}', '${b.id}', '${b.label} (${b.time})')"
+                         title="Clic para editar o quitar">
+                      <div>
+                        <div class="slot-course-name" style="color: ${courseColor};">${courseName}</div>
+                        ${assignment.room ? `<div class="slot-room">📍 ${this.escapeHtml(assignment.room)}</div>` : ''}
+                      </div>
+                      <div style="font-size: 0.65rem; color: var(--text-subtle); text-align: right;">✏️ Editar</div>
+                    </div>
+                  </td>
+                `;
+              } else {
+                cellsHtml += `
+                  <td>
+                    <div class="schedule-slot empty"
+                         onclick="app.openEditSlotModal('${day}', '${b.id}', '${b.label} (${b.time})')"
+                         title="Clic para asignar materia">
+                      <span class="slot-empty-text">+ Asignar</span>
+                    </div>
+                  </td>
+                `;
+              }
+            });
+
+            tr.innerHTML = cellsHtml;
+          }
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      openEditSlotModal(day, blockId, timeLabel) {
+        document.getElementById("slot-day").value = day;
+        document.getElementById("slot-block").value = blockId;
+        document.getElementById("modal-slot-title").textContent = `Asignar Clase — ${day}`;
+        document.getElementById("modal-slot-subtitle").textContent = `${timeLabel}`;
+
+        const select = document.getElementById("slot-course-select");
+        select.innerHTML = '<option value="">-- Seleccionar Materia --</option>';
+
+        const slotKey = `${day}_${blockId}`;
+        const current = (this.data.schedule && this.data.schedule[slotKey]) || null;
+
+        this.data.courses.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.textContent = c.name;
+          if (current && current.courseId === c.id) opt.selected = true;
+          select.appendChild(opt);
+        });
+
+        document.getElementById("slot-room-input").value = (current && current.room) ? current.room : "";
+
+        document.getElementById("modal-edit-slot").classList.add("open");
+      }
+
+      saveSlotAssignment() {
+        const day = document.getElementById("slot-day").value;
+        const blockId = document.getElementById("slot-block").value;
+        const courseId = document.getElementById("slot-course-select").value;
+        const room = document.getElementById("slot-room-input").value.trim();
+
+        if (!courseId) {
+          alert("Por favor selecciona una materia de la lista.");
+          return;
+        }
+
+        if (!this.data.schedule) this.data.schedule = {};
+
+        const slotKey = `${day}_${blockId}`;
+        this.data.schedule[slotKey] = {
+          courseId: courseId,
+          room: room
+        };
+
+        this.saveData();
+        this.closeModals();
+        this.renderSchedule();
+        this.showToast("Clase guardada en el horario");
+      }
+
+      removeSlotAssignment() {
+        const day = document.getElementById("slot-day").value;
+        const blockId = document.getElementById("slot-block").value;
+
+        if (!this.data.schedule) this.data.schedule = {};
+
+        const slotKey = `${day}_${blockId}`;
+        if (this.data.schedule[slotKey]) {
+          delete this.data.schedule[slotKey];
+          this.saveData();
+          this.closeModals();
+          this.renderSchedule();
+          this.showToast("Clase quitada del horario");
+        } else {
+          this.closeModals();
+        }
+      }
+
+      clearSchedule() {
+        if (confirm("¿Estás seguro de que quieres limpiar todo el horario semanal?")) {
+          this.data.schedule = {};
+          this.saveData();
+          this.renderSchedule();
+          this.showToast("Horario limpiado");
+        }
+      }
+
+      escapeHtml(text) {
+        if (!text) return "";
+        return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+    }
+
+    let app;
+    window.addEventListener("DOMContentLoaded", () => {
+      app = new AcademicPlanner();
+    });
+  </script>
+</body>
+</html>
